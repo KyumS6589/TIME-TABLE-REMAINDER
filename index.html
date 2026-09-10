@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#6d5dfc">
+<meta name="description" content="Time-Table & Reminder - personal daily timetable and reminder app">
+<title>Time-Table & Reminder</title>
+<style>
+:root{
+  --bg:#f7f7ff;--card:#ffffffee;--text:#20233d;--muted:#747992;
+  --primary:#6d5dfc;--primary2:#9a73ff;--pink:#ff6fae;--cyan:#20c9d8;
+  --green:#25b77a;--orange:#ff9f43;--red:#ff5c70;--border:#e8e8f3;
+  --shadow:0 18px 45px rgba(55,48,125,.11)
+}
+*{box-sizing:border-box}
+body{
+ margin:0;color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+ background:radial-gradient(circle at 8% 4%,#e5e0ff 0,transparent 29%),
+ radial-gradient(circle at 96% 10%,#d9faff 0,transparent 28%),
+ linear-gradient(135deg,#faf9ff,#effcff 55%,#fff5f9);min-height:100vh
+}
+button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}
+.header{padding:24px 16px 15px}.headerInner{max-width:1200px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:15px}
+.brand{display:flex;align-items:center;gap:13px}.logo{width:54px;height:54px;border-radius:17px;background:linear-gradient(135deg,var(--primary),var(--pink));display:grid;place-items:center;color:white;font-size:26px;box-shadow:0 12px 26px #6d5dfc40}
+h1{font-size:clamp(25px,5vw,36px);margin:0;letter-spacing:-1.2px}.subtitle{font-size:13px;color:var(--muted);margin-top:4px}
+.clock{background:var(--card);border:1px solid white;border-radius:16px;padding:10px 14px;box-shadow:var(--shadow);text-align:right}.clock b{display:block;font-size:18px}.clock span{font-size:11px;color:var(--muted)}
+.container{max-width:1200px;margin:auto;padding:0 16px 42px}
+.toolbar{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin:5px 0 15px}
+.btn{padding:10px 14px;border-radius:12px;font-weight:800}.primary{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;box-shadow:0 9px 20px #6d5dfc30}.secondary{background:#eeecff;color:var(--primary)}.ghost{background:#f2f3f8;color:#555b72}.danger{background:#fff0f3;color:var(--red)}
+.autosave{margin-left:auto;background:#ecfbf5;color:#16845a;border-radius:20px;padding:8px 11px;font-size:11px;font-weight:800}
+.tabs{display:flex;gap:7px;overflow:auto;padding:2px 0 15px}.tab{padding:10px 15px;border-radius:12px;background:#ffffffaa;border:1px solid var(--border);color:var(--muted);font-weight:800;white-space:nowrap}.tab.active{background:var(--primary);border-color:var(--primary);color:#fff;box-shadow:0 8px 18px #6d5dfc30}
+.grid{display:grid;grid-template-columns:1.35fr .75fr;gap:17px}.card{background:var(--card);border:1px solid #fff;border-radius:21px;padding:19px;box-shadow:var(--shadow)}
+.titleRow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}.titleRow h2{margin:0;font-size:18px}.muted{color:var(--muted);font-size:12px}
+.form{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}.field label{display:block;font-size:11px;font-weight:900;color:#60657e;margin-bottom:6px}
+input,select,textarea{width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:12px;background:#fafaff;color:var(--text);outline:none}input:focus,select:focus,textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px #6d5dfc14}.full{grid-column:1/-1}
+.days{display:flex;gap:6px;flex-wrap:wrap}.day input{display:none}.day span{display:block;padding:8px 10px;border:1px solid var(--border);border-radius:10px;background:#fff;color:var(--muted);font-size:11px;font-weight:900}.day input:checked+span{background:#eeeaff;color:var(--primary);border-color:#c9c0ff}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
+.entries{display:flex;flex-direction:column;gap:9px}.entry{display:grid;grid-template-columns:84px 1fr auto;gap:12px;align-items:center;border:1px solid var(--border);padding:12px;border-radius:16px;background:linear-gradient(100deg,#fff,#fafaff)}
+.timebox{background:#f0efff;color:var(--primary);border-radius:12px;text-align:center;padding:8px 4px;font-weight:900;font-size:13px}.timebox small{display:block;color:var(--muted);font-size:9px;margin-top:3px}
+.entry h3{margin:0 0 3px;font-size:14px}.entry p{margin:0;color:var(--muted);font-size:11px}.badge{display:inline-block;margin-top:6px;margin-right:5px;padding:4px 7px;border-radius:8px;background:#eef9f5;color:#16845a;font-size:9px;font-weight:900}.badge.purple{background:#f0efff;color:var(--primary)}
+.entryActions{display:flex;gap:6px}.icon{width:34px;height:34px;border-radius:10px;background:#f3f4f9;color:#5d6278;font-weight:900}.icon:hover{background:#eeeaff;color:var(--primary)}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:13px}.stat{padding:13px;border:1px solid var(--border);border-radius:14px;background:#fafaff}.stat b{font-size:21px}.stat span{display:block;color:var(--muted);font-size:10px;margin-top:2px}
+.switchrow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0 12px}.switch{position:relative;width:47px;height:26px}.switch input{display:none}.slider{position:absolute;inset:0;background:#d9dbe6;border-radius:30px}.slider:before{content:"";position:absolute;width:20px;height:20px;left:3px;top:3px;background:white;border-radius:50%;transition:.2s;box-shadow:0 2px 5px #9995}.switch input:checked+.slider{background:var(--primary)}.switch input:checked+.slider:before{transform:translateX(21px)}
+.notice{background:#eefbff;border:1px solid #cceff3;color:#39757d;border-radius:13px;padding:11px;font-size:11px;line-height:1.5}
+.history{display:flex;flex-direction:column;gap:8px;margin-top:10px}.historyItem{padding:10px;border-radius:12px;background:#fff7fa;border:1px solid #ffe0ea}.historyItem b{font-size:11px}.historyItem div{font-size:10px;color:var(--muted);margin-top:3px}
+.empty{text-align:center;color:var(--muted);padding:28px 8px;font-size:12px}
+.next{padding:13px;border-radius:15px;background:linear-gradient(135deg,#f1efff,#fff0f7);margin-bottom:13px;border:1px solid #e8e2ff}.next small{color:var(--muted);font-size:10px}.next b{display:block;font-size:16px;margin-top:3px}
+.modal{display:none;position:fixed;inset:0;background:#14142988;backdrop-filter:blur(5px);z-index:1000;align-items:center;justify-content:center;padding:17px}.modal.show{display:flex}.modalBox{width:min(450px,100%);background:white;border-radius:22px;padding:22px;box-shadow:0 25px 80px #0003}.modalBox h2{margin:4px 0 7px}
+.toastWrap{position:fixed;right:15px;bottom:15px;z-index:1100;display:flex;flex-direction:column;gap:8px;max-width:min(380px,calc(100vw - 30px))}.toast{background:#20233d;color:#fff;padding:13px 15px;border-radius:14px;box-shadow:0 15px 40px #0003;animation:toastIn .2s ease}.toast b{display:block;font-size:12px}.toast small{color:#d8d9e4;font-size:10px}@keyframes toastIn{from{transform:translateY(12px);opacity:0}to{transform:none;opacity:1}}
+footer{text-align:center;color:var(--muted);font-size:10px;padding:18px}
+@media(max-width:850px){.grid{grid-template-columns:1fr}.clock{display:none}.autosave{margin-left:0}}
+@media(max-width:580px){.form{grid-template-columns:1fr}.full{grid-column:auto}.entry{grid-template-columns:66px 1fr}.entryActions{grid-column:2}.container{padding:0 10px 30px}.card{padding:15px;border-radius:18px}}
+</style>
+</head>
+<body>
+
+<header class="header">
+ <div class="headerInner">
+  <div class="brand">
+   <div class="logo">⏰</div>
+   <div><h1>Time-Table & Reminder</h1><div class="subtitle">Your personal daily timetable, automatically saved.</div></div>
+  </div>
+  <div class="clock"><b id="clock">--:--:--</b><span id="date">Loading...</span></div>
+ </div>
+</header>
+
+<main class="container">
+ <div class="toolbar">
+   <button class="btn primary" onclick="requestNotifications()">Enable Notifications</button>
+   <button class="btn secondary" onclick="testReminder()">Test Reminder</button>
+   <button class="btn ghost" onclick="restoreOriginal()">Restore My Original Timetable</button>
+   <span class="autosave" id="saveStatus">● Auto-saved</span>
+ </div>
+
+ <div class="tabs" id="tabs"></div>
+
+ <div class="grid">
+  <section class="card">
+   <div class="titleRow">
+    <div><h2 id="formTitle">Add timetable activity</h2><div class="muted">Changes are saved automatically on this device.</div></div>
+   </div>
+
+   <div class="form">
+    <div class="field"><label>ACTIVITY / SUBJECT</label><input id="title" placeholder="e.g. Complex Analysis"></div>
+    <div class="field"><label>START TIME</label><input id="start" type="time"></div>
+    <div class="field"><label>END TIME</label><input id="end" type="time"></div>
+    <div class="field"><label>CATEGORY</label>
+      <select id="category"><option>Study</option><option>Class</option><option>Research</option><option>Exam</option><option>Assignment</option><option>Personal</option><option>Exercise</option><option>Sleep</option><option>Other</option></select>
+    </div>
+    <div class="field"><label>REMINDER BEFORE</label>
+      <select id="lead"><option value="5">5 minutes</option><option value="10">10 minutes</option><option value="15">15 minutes</option><option value="30" selected>30 minutes</option><option value="45">45 minutes</option><option value="60">1 hour</option><option value="120">2 hours</option></select>
+    </div>
+    <div class="field full"><label>REPEAT ON</label><div class="days" id="days"></div></div>
+    <div class="field full"><label>NOTES</label><textarea id="notes" rows="2" placeholder="Room, topic, preparation, etc."></textarea></div>
+   </div>
+
+   <div class="actions">
+    <button class="btn primary" id="saveBtn" onclick="saveEntry()">Save Activity</button>
+    <button class="btn ghost" id="cancelBtn" onclick="resetForm()" style="display:none">Cancel Edit</button>
+   </div>
+  </section>
+
+  <aside class="card">
+   <div class="titleRow"><div><h2>Reminder Center</h2><div class="muted">Automatic daily reminders</div></div><button class="btn ghost" onclick="clearHistory()">Clear</button></div>
+   <div class="next" id="nextBox"><small>UP NEXT</small><b>No activity scheduled</b></div>
+   <div class="stats"><div class="stat"><b id="todayCount">0</b><span>Today's activities</span></div><div class="stat"><b id="sentCount">0</b><span>Reminders sent today</span></div></div>
+   <div class="switchrow"><div><b style="font-size:12px">Daily reminders</b><div class="muted">Check timetable automatically</div></div><label class="switch"><input id="enabled" type="checkbox" checked onchange="toggleReminders()"><span class="slider"></span></label></div>
+   <div class="notice"><b>Reminder note:</b> Browser notifications require permission. For the most reliable reminders, keep this page open. GitHub Pages alone cannot send SMS/WhatsApp messages directly.</div>
+   <div class="history" id="history"></div>
+  </aside>
+
+  <section class="card" style="grid-column:1/-1">
+   <div class="titleRow">
+    <div><h2 id="scheduleTitle">Today's timetable</h2><div class="muted">Your handwritten timetable has been pre-loaded and saved automatically.</div></div>
+    <div class="actions" style="margin:0">
+      <button class="btn ghost" onclick="exportData()">Export Backup</button>
+      <button class="btn ghost" onclick="document.getElementById('file').click()">Import Backup</button>
+      <input id="file" type="file" accept=".json" style="display:none" onchange="importData(event)">
+    </div>
+   </div>
+   <div class="entries" id="entries"></div>
+  </section>
+ </div>
+ <footer>Time-Table & Reminder • Your timetable is stored locally in your browser.</footer>
+</main>
+
+<div class="modal" id="modal"><div class="modalBox"><div style="font-size:32px">🔔</div><h2 id="modalTitle">Reminder</h2><p id="modalText" class="muted"></p><div class="actions"><button class="btn primary" onclick="closeModal()">Got it</button><button class="btn ghost" onclick="closeModal()">Dismiss</button></div></div></div>
+<div class="toastWrap" id="toasts"></div>
+
+<script>
+const DAYS=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const SHORT=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
+const ORIGINAL=[
+ {title:"Breakfast & Ready for college",start:"09:00",end:"10:00",category:"Personal",lead:30,days:[0,1,2,3,4,5,6],notes:""},
+ {title:"College Classes",start:"10:00",end:"13:00",category:"Class",lead:30,days:[0,1,2,3,4,5,6],notes:""},
+ {title:"Research Writing",start:"13:00",end:"17:00",category:"Research",lead:30,days:[0,1,2,3,4,5,6],notes:""},
+ {title:"JRF Test",start:"17:00",end:"21:00",category:"Exam",lead:30,days:[0,1,2,3,4,5,6],notes:""},
+ {title:"Dinner",start:"21:00",end:"22:00",category:"Personal",lead:30,days:[0,1,2,3,4,5,6],notes:""},
+ {title:"Class Work",start:"22:00",end:"00:00",category:"Study",lead:30,days:[0,1,2,3,4,5,6],notes:""},
+ {title:"Class Notes Revision / JRF Revision",start:"00:00",end:"03:00",category:"Study",lead:30,days:[0,1,2,3,4,5,6],notes:""},
+ {title:"Sleep",start:"03:00",end:"09:00",category:"Sleep",lead:30,days:[0,1,2,3,4,5,6],notes:""}
+];
+
+let entries=JSON.parse(localStorage.getItem("tt_entries_v2")||"null");
+if(!Array.isArray(entries)){entries=ORIGINAL.map(x=>({...x,id:uid()}));localStorage.setItem("tt_entries_v2",JSON.stringify(entries));}
+let history=JSON.parse(localStorage.getItem("tt_history_v2")||"[]");
+let selectedDay=new Date().getDay(),editId=null;
+
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8)}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function dateKey(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function mins(t){const [h,m]=t.split(":").map(Number);return h*60+m}
+function formatTime(t){const [h,m]=t.split(":").map(Number);const d=new Date();d.setHours(h,m,0,0);return d.toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}
+function save(){
+ localStorage.setItem("tt_entries_v2",JSON.stringify(entries));
+ localStorage.setItem("tt_history_v2",JSON.stringify(history.slice(-100)));
+ document.getElementById("saveStatus").textContent="● Auto-saved "+new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
+}
+function toast(title,msg){
+ const x=document.createElement("div");x.className="toast";x.innerHTML="<b>"+esc(title)+"</b><small>"+esc(msg)+"</small>";
+ document.getElementById("toasts").appendChild(x);setTimeout(()=>x.remove(),5000);
+}
+function buildTabs(){
+ document.getElementById("tabs").innerHTML=SHORT.map((d,i)=>`<button class="tab ${i===selectedDay?"active":""}" onclick="selectedDay=${i};buildTabs();render()">${d}</button>`).join("");
+ document.getElementById("days").innerHTML=DAYS.map((d,i)=>`<label class="day"><input type="checkbox" id="d${i}" value="${i}"><span>${d.slice(0,3)}</span></label>`).join("");
+}
+function resetForm(){
+ editId=null;
+ ["title","start","end","notes"].forEach(id=>document.getElementById(id).value="");
+ document.getElementById("category").value="Study";document.getElementById("lead").value="30";
+ DAYS.forEach((_,i)=>document.getElementById("d"+i).checked=false);
+ document.getElementById("d"+selectedDay).checked=true;
+ document.getElementById("formTitle").textContent="Add timetable activity";
+ document.getElementById("saveBtn").textContent="Save Activity";
+ document.getElementById("cancelBtn").style.display="none";
+}
+function saveEntry(){
+ const title=document.getElementById("title").value.trim(),start=document.getElementById("start").value,end=document.getElementById("end").value;
+ const days=[...document.querySelectorAll("#days input:checked")].map(x=>+x.value);
+ if(!title||!start||!end||!days.length){toast("Missing information","Enter activity, start/end time and at least one day.");return}
+ const item={id:editId||uid(),title,start,end,category:document.getElementById("category").value,lead:+document.getElementById("lead").value,days,notes:document.getElementById("notes").value.trim()};
+ if(editId)entries=entries.map(e=>e.id===editId?item:e);else entries.push(item);
+ save();resetForm();render();toast(editId?"Activity updated":"Activity saved",title+" has been saved automatically.");
+}
+function editEntry(id){
+ const e=entries.find(x=>x.id===id);if(!e)return;editId=id;
+ document.getElementById("title").value=e.title;document.getElementById("start").value=e.start;document.getElementById("end").value=e.end;
+ document.getElementById("category").value=e.category;document.getElementById("lead").value=e.lead;document.getElementById("notes").value=e.notes||"";
+ DAYS.forEach((_,i)=>document.getElementById("d"+i).checked=e.days.includes(i));
+ document.getElementById("formTitle").textContent="Edit timetable activity";document.getElementById("saveBtn").textContent="Update Activity";document.getElementById("cancelBtn").style.display="inline-block";
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+function deleteEntry(id){
+ const e=entries.find(x=>x.id===id);if(e&&confirm('Delete "'+e.title+'"?')){entries=entries.filter(x=>x.id!==id);save();render();toast("Deleted",e.title)}
+}
+function render(){
+ const list=entries.filter(e=>e.days.includes(selectedDay)).sort((a,b)=>mins(a.start)-mins(b.start));
+ document.getElementById("scheduleTitle").textContent=(selectedDay===new Date().getDay()?"Today's ":"")+DAYS[selectedDay]+" timetable";
+ document.getElementById("todayCount").textContent=list.length;
+ const box=document.getElementById("entries");
+ if(!list.length){box.innerHTML='<div class="empty">No activity scheduled for '+DAYS[selectedDay]+'.</div>'}
+ else box.innerHTML=list.map(e=>`<div class="entry">
+ <div class="timebox">${formatTime(e.start)}<small>START</small></div>
+ <div><h3>${esc(e.title)}</h3><p>${formatTime(e.start)} – ${formatTime(e.end)} • ${esc(e.category)}${e.notes?" • "+esc(e.notes):""}</p>
+ <span class="badge">🔔 ${e.lead} min before</span>${e.days.length===7?'<span class="badge purple">Every day</span>':''}</div>
+ <div class="entryActions"><button class="icon" onclick="editEntry('${e.id}')" title="Edit">✎</button><button class="icon" onclick="deleteEntry('${e.id}')" title="Delete">×</button></div>
+ </div>`).join("");
+ renderNext();renderHistory();
+}
+function renderNext(){
+ const now=new Date(),day=now.getDay(),cur=now.getHours()*60+now.getMinutes();
+ let list=entries.filter(e=>e.days.includes(day)).sort((a,b)=>mins(a.start)-mins(b.start));
+ let next=list.find(e=>mins(e.start)>=cur);
+ if(!next)next=list[0];
+ document.getElementById("nextBox").innerHTML=next?`<small>UP NEXT • ${formatTime(next.start)}</small><b>${esc(next.title)}</b><div class="muted">${formatTime(next.start)} – ${formatTime(next.end)}</div>`:"<small>UP NEXT</small><b>No activity scheduled</b>";
+}
+function renderHistory(){
+ const today=dateKey();document.getElementById("sentCount").textContent=history.filter(x=>x.date===today).length;
+ const h=document.getElementById("history"),recent=history.slice(-7).reverse();
+ h.innerHTML=recent.length?recent.map(x=>`<div class="historyItem"><b>🔔 ${esc(x.title)}</b><div>${esc(x.date)} • ${esc(x.time)} • ${esc(x.method)}</div></div>`).join(""):'<div class="empty" style="padding:18px 4px">No reminders sent yet.</div>';
+}
+function requestNotifications(){
+ if(!("Notification" in window)){toast("Not supported","This browser does not support notifications.");return}
+ Notification.requestPermission().then(p=>toast(p==="granted"?"Notifications enabled":"Permission not granted",p==="granted"?"Browser reminders are ready.":"Allow notifications in browser settings."));
+}
+function showReminder(title,body){
+ toast("🔔 "+title,body);document.getElementById("modalTitle").textContent="🔔 "+title;document.getElementById("modalText").textContent=body;document.getElementById("modal").classList.add("show");
+ if("Notification" in window&&Notification.permission==="granted"){try{new Notification(title,{body,tag:"tt-"+title})}catch(e){}}
+}
+function closeModal(){document.getElementById("modal").classList.remove("show")}
+function checkReminders(){
+ if(document.getElementById("enabled").checked===false)return;
+ const now=new Date(),day=now.getDay(),current=now.getHours()*60+now.getMinutes()+now.getSeconds()/60;
+ const sent=JSON.parse(localStorage.getItem("tt_sent_v2")||"{}");
+ entries.filter(e=>e.days.includes(day)).forEach(e=>{
+   let r=mins(e.start)-e.lead,d=current-r;
+   // For an activity after midnight, normal clock minutes are used for that day's entry.
+   if(d>=0&&d<2){
+    const key=dateKey()+"_"+e.id;
+    if(!sent[key]){
+     sent[key]=true;localStorage.setItem("tt_sent_v2",JSON.stringify(sent));
+     history.push({title:e.title,time:formatTime(e.start),date:dateKey(),method:"Browser notification"});
+     save();renderHistory();showReminder(e.title,`Starts at ${formatTime(e.start)}. This is your ${e.lead}-minute reminder.`);
+    }
+   }
+ });
+}
+function toggleReminders(){localStorage.setItem("tt_enabled_v2",document.getElementById("enabled").checked?"1":"0");toast(document.getElementById("enabled").checked?"Daily reminders ON":"Daily reminders OFF","Your setting has been saved.");}
+function testReminder(){showReminder(document.getElementById("title").value.trim()||"Test reminder","This is a test notification from Time-Table & Reminder.")}
+function clearHistory(){if(confirm("Clear reminder history?")){history=[];save();renderHistory()}}
+function exportData(){
+ const blob=new Blob([JSON.stringify({entries,history},null,2)],{type:"application/json"}),a=document.createElement("a");
+ a.href=URL.createObjectURL(blob);a.download="time-table-reminder-backup.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500);
+}
+function importData(ev){
+ const f=ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{
+ try{const d=JSON.parse(r.result);if(!Array.isArray(d.entries))throw Error();entries=d.entries;history=Array.isArray(d.history)?d.history:[];save();render();toast("Backup imported","Your timetable has been restored.");}
+ catch(e){toast("Import failed","Please select a valid backup file.")}
+ };r.readAsText(f);ev.target.value="";
+}
+function restoreOriginal(){
+ if(confirm("Restore the timetable from your handwritten schedule? This replaces the current timetable.")){entries=ORIGINAL.map(x=>({...x,id:uid()}));save();render();toast("Restored","Your original 24-hour timetable is saved automatically.")}
+}
+function clock(){
+ const d=new Date();document.getElementById("clock").textContent=d.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit",second:"2-digit"});document.getElementById("date").textContent=d.toLocaleDateString([], {weekday:"long",day:"numeric",month:"short",year:"numeric"});renderNext();
+}
+function init(){
+ buildTabs();resetForm();
+ if(localStorage.getItem("tt_enabled_v2")==="0")document.getElementById("enabled").checked=false;
+ clock();setInterval(clock,1000);render();checkReminders();setInterval(checkReminders,10000);
+ document.addEventListener("visibilitychange",()=>{if(!document.hidden)checkReminders()});
+}
+init();
+</script>
+</body>
+</html>
